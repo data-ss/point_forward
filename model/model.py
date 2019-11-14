@@ -10,7 +10,7 @@ from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 from nltk.tokenize import RegexpTokenizer#nltk.download('wordnet')
 from nltk.stem.wordnet import WordNetLemmatizer
-import pickle
+# import pickle
 from sklearn.pipeline import make_pipeline
 
 # training data

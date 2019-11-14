@@ -26,8 +26,8 @@ from nltk.stem.wordnet import WordNetLemmatizer
 from sklearn.pipeline import make_pipeline
 
 # training data
-df_indeed_list = pd.read_csv("data/indeed_data_scientist_list.csv")
-df_linkedin_list = pd.read_csv("data/linkedin_data_scientist_list.csv")
+df_indeed_list = pd.read_csv("model/data/indeed_data_scientist_list.csv")
+df_linkedin_list = pd.read_csv("model/data/linkedin_data_scientist_list.csv")
 df_list = pd.concat([df_indeed_list, df_linkedin_list], axis=0)
 df_list.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
 df_list.dropna(subset=["text"], inplace=True)
@@ -36,7 +36,7 @@ df_list.reset_index(inplace=True, drop=True)
 ##Creating a list of stop words and adding custom stopwords
 stop_words = set(stopwords.words("english"))
 ##Creating a list of custom stopwords
-new_words = ["using", "show", "result", "large", "also", "iv", "one", "owner", "two", "new", "previously", "cambridge", "shown", "work", "technology", "de", "business", "product", "et", "asset", "required", "engineer", "opportunity", "within", "including", "tool", "create", "etc"]
+new_words = ["using", "company", "monitor", "outcome", "show", "result", "large", "also", "iv", "one", "owner", "two", "new", "previously", "cambridge", "shown", "work", "technology", "de", "business", "product", "et", "asset", "required", "engineer", "opportunity", "within", "including", "tool", "create", "etc"]
 stop_words = stop_words.union(new_words)
 
 # cleaning the text data
@@ -67,7 +67,7 @@ def cleaner(corpora):
         corpus.append(text)
     return corpus
 
-corpus = cleaner(corpora)
+corpus = cleaner(df_list["text"])
 
 cv=CountVectorizer(max_df=0.8,stop_words=stop_words, max_features=10000, ngram_range=(1,3))
 X=cv.fit_transform(corpus)
@@ -108,38 +108,7 @@ tfidf_transformer.fit(X)
 feature_names=cv.get_feature_names()
 
 
-test = ["""
-    Work closely with business owners to identify opportunities and serve as an ambassador for data science Design and deliver enterprise analytic solutions to our customers Develop powerful business insights from social, marketing and industrial data using advanced machine learning techniques
-        Build complex statistical models that learn from and scale to petabytes of data Work in a highly interactive, team-oriented environment with Big Data developers and Visualisation experts  Graduate level qualification in a relevant technical field (Computer Science, Engineering, Applied Mathematics/Statistics, Operations Research) ideally with a specialization in data mining/machine learning
-Up to 5 years' experience of working in analytical environments
-Deep expertise in analytical tools such as R/Matlab/SAS/Stata
-Experience of scripting languages such as Python/Ruby/PHP etc.
-Experience of relational databases and usage of SQL
-Experience of Object Orientated programming via Java/C++
-Experience of Big data technologies (Hadoop, HIVE, PIG, Spark etc.) and unstructured data
-Demonstrated track record of manipulation of large volume, high frequency data for analytical purposes on a Big Data platform
-Demonstrated experience of developing and implementing statistical models (predictive & descriptive)
-Demonstrated experience in delivering high quality, high impact analytical solutions to business problems
-"""]
 
-doc = cleaner(test)
-#generate tf-idf for the given document
-tf_idf_vector=tfidf_transformer.transform(cv.transform([doc]))
-
-### RESULTS ###
-#sort the tf-idf vectors by descending order of scores
-sorted_items=sort_coo(tf_idf_vector.tocoo())
-
-#extract only the top n; n here is 10
-keywords=extract_topn_from_vector(feature_names,sorted_items,10)
-###
-
-# now print the results
-print("\nAbstract:")
-print(doc)
-print("\nKeywords:")
-for k in keywords:
-    print(k,keywords[k])
 
 
 #-------- ROUTES GO HERE -----------#
@@ -154,17 +123,29 @@ def predict():
         result = request.form
 
 
+    doc = cleaner([result["description"]])
+    #generate tf-idf for the given document
+    tf_idf_vector=tfidf_transformer.transform(cv.transform(doc))
+
+    ### RESULTS ###
+    #sort the tf-idf vectors by descending order of scores
+    sorted_items=sort_coo(tf_idf_vector.tocoo())
+
+    #extract only the top n; n here is 10
+    keywords=extract_topn_from_vector(feature_names,sorted_items,10)
+###
+
+# now print the results
+    # print("\nAbstract:")
+    # print(doc)
+    # abstract = doc
+    prediction = [(k,keywords[k]) for k in keywords]
 
 
 
 
-    predicted = pipe.predict(new)[0]
-    if predicted == 1:
-        prediction = "YOUR LEFT STROKE JUST WENT VIRAL!!"
-    else:
-        prediction = "Sit down, be humble. Probably not gonna go viral."
-    # prediction = '{:,.2f}%'.format(prediction)
-    return render_template('index.html', prediction=prediction)
+
+    return render_template('index.html', prediction=prediction[0])
 
 
 

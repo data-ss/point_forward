@@ -10,6 +10,24 @@
   </head>
   <body>
 
+<form action = "/" method="POST">
+  <div class="container">
+    <p class="text-muted">Job Title:
+    <input type="text" name="title" placeholder="Search Job Title" size=50>
+      <br>
+    <p class="text-muted">Job Description:
+    <textarea type="text" name="description" rows="6", cols="50" wrap="soft" placeholder="Paste Job Description"></textarea>
+  </div>
+
+  <div class="button">
+  <p><input class="btn btn-outline btn-xl js-scroll-trigger" type="submit" value="Find Keywords!"/></p>
+  </div>
+</form>
+
+<div class="feature-item">
+  <h3 class="section-heading text-center">Keywords: {{ prediction }}</h3>
+  <br>
+  </div>
 
 
 
