@@ -10,30 +10,22 @@
   </head>
   <body>
 
-<form action = "/" method="POST">
+<form action = "/cloud" method="POST">
   <div class="container">
     <p class="text-muted">Job Title:
     <input type="text" name="title" placeholder="Search Job Title" size=50>
       <br>
-    <p class="text-muted">Job Description:
-    <textarea type="text" name="description" rows="6", cols="50" wrap="soft" placeholder="Paste Job Description"></textarea>
-    <br>
-    <p class="text-muted">Number of Keywords to Show:
-    <input type="number" min="2" max = "30" name="nkeywords" value="2" placeholder="max 20" size=100>
-      <br>
-      <p class="text-muted">Filter Out:
-      <input type="text" name="extra" placeholder="Remove these from search" size=50>
   </div>
 
   <div class="button">
-  <p><input class="btn btn-outline btn-xl js-scroll-trigger" type="submit" value="Find Keywords!"/></p>
+  <p><input class="btn btn-outline btn-xl js-scroll-trigger" type="submit" value="Generate Cloud!"/></p>
   </div>
 </form>
 
 
 <div class="feature-item">
-  {% if prediction %}
-  <h3 class="section-heading text-center">Keywords: {{ prediction }}</h3>
+  {% if cloud %}
+  <img src={{ url_for('static', filename="cloud1.png") }} alt="user cloud" style="width:1000px;height:600px;">
   <br>
   {% endif %}
   </div>

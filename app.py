@@ -1,43 +1,37 @@
 import flask
-import pickle
+# import pickle
 import numpy as np
 from flask import Flask, request, render_template
 import pandas as pd
-
-app = flask.Flask(__name__, template_folder="")
-
-#-------- MODEL GOES HERE -----------#
-
-# pipe = pickle.load(open("model/pipe.pkl", "rb"))
-
-import pandas as pd
-from wordcloud import WordCloud
-import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer
 from scipy.sparse import coo_matrix
 import re
 import nltk
+from wordcloud import WordCloud
 #nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 from nltk.tokenize import RegexpTokenizer#nltk.download('wordnet')
 from nltk.stem.wordnet import WordNetLemmatizer
-
-## table maker ##
-# import things
 from flask_table import Table, Col
+from gazpacho import get, Soup
+from selenium.webdriver import Firefox
+from selenium.webdriver.firefox.options import Options
+from bs4 import BeautifulSoup
+import time
+import pandas as pd
+import random
+# import sqlite3
+# from sqlite3 import Error
 
-# Declare your table
-class ItemTable(Table):
-    name = Col('Name')
-    description = Col('Description')
+options = Options()
+options.headless = True
+browser = Firefox(options=options)
 
-# Get some objects
-class Item(object):
-    def __init__(self, name, description):
-        self.name = name
-        self.description = description
-###
+
+app = flask.Flask(__name__, template_folder="")
+
+#-------- MODEL GOES HERE -----------#
 
 # training data
 df_indeed_list = pd.read_csv("model/data/indeed_data_scientist_list.csv")
@@ -76,6 +70,8 @@ def cleaner(corpora):
         ##Stemming
         ps=PorterStemmer()    #Lemmatisation
         lem = WordNetLemmatizer()
+
+
         text = [lem.lemmatize(word) for word in text if not word in stop_words]
         text = " ".join(text)
         corpus.append(text)
@@ -121,11 +117,112 @@ tfidf_transformer.fit(X)
 # get feature names
 feature_names=cv.get_feature_names()
 
+### SCRAPER
+def indeed_scraper(job_title, jobs_per_page, search_radius, pages):
+    '''
+    1. Automatically uses "+" as a space delimiter when entering job_title
 
+    '''
+    job_title = job_title.replace(" ", "+")
+    url = f"https://ca.indeed.com/jobs?q={job_title}&l=Toronto%2C+ON&limit={jobs_per_page}&radius={search_radius}&start={pages}"
+    html = get(url)
+    soup = Soup(html)
+    jerbs_index = soup.find("td", {"id": "resultsCol"})
 
+    jerbs_indeed = []
+    for i in range(len(jerbs_index.find("div", {"class": "title"}, mode="all"))):
+        list_1 = {}
+        list_1["title"] = jerbs_index.find("div", {"class": "title"}, mode="all")[i].find("a").attrs["title"]
+        if jerbs_index.find("span", {"class": "company"}, mode="all")[i].text == "":
+            list_1["company"] = jerbs_index.find("div", {"class": "sjcl"}, mode="all")[i].find("a")[0].text
+        else:
+            list_1["company"] = jerbs_index.find("span", {"class": "company"}, mode="all")[i].text
+        list_1["url"] = "https://ca.indeed.com"+jerbs_index.find("div", {"class": "title"}, mode="all")[i].find("a").attrs["href"]
+        html_jerb = get(list_1["url"])
+        soup_jerb = Soup(html_jerb)
+        list_1["text"] = BeautifulSoup(" ".join([i.html for i in soup_jerb.find("div", {"id": "jobDescriptionText"}, mode="all")[0].find("li", mode="all")])).get_text(" ").replace("\n", " ")
+        jerbs_indeed.append(list_1)
+        time.sleep(random.randint(1, 10) / 10)
+    return jerbs_indeed
 
+def linkedin_scraper(job_title, clicks_linkedin):
+    job_title = job_title.replace(" ", "%20")
+    url_linkedin = f"https://www.linkedin.com/jobs/search?keywords={job_title}&location=Toronto%2C%20Ontario%2C%20Canada&trk=homepage-jobseeker_jobs-search-bar_search-submit&redirect=false&position=1&pageNum=0"
+    browser.get(url_linkedin)
+
+    for _ in range(clicks_linkedin):
+    # clicking to get more jobs
+        browser.find_element_by_class_name("see-more-jobs").click()
+        browser.implicitly_wait(random.randint(random.randint(10, 15), random.randint(16, 20))) # seconds
+
+    html_linkedin = browser.page_source
+    soup_linkedin = Soup(html_linkedin)
+
+    jerbs_linkedin = []
+    for i in range(len(soup_linkedin.find("li", {"class": "result-card job-result-card result-card--with-hover-state"}, mode="all"))):
+        list_2 = {}
+        list_2["title"] = soup_linkedin.find("li", {"class": "result-card job-result-card result-card--with-hover-state"}, mode="all")[i].find("h3", {"class":"result-card__title job-result-card__title"}).text
+        list_2["company"] = soup_linkedin.find("li", {"class": "result-card job-result-card result-card--with-hover-state"}, mode="all")[i].find("h4", {"class":"result-card__subtitle job-result-card__subtitle"}).text
+        list_2["url"] = soup_linkedin.find("li", {"class": "result-card job-result-card result-card--with-hover-state"}, mode="all")[i].find("a", {"class": "result-card__full-card-link"}, mode="all")[0].attrs["href"]
+        browser.implicitly_wait(random.randint(random.randint(1, 5), random.randint(6, 10))) # seconds
+#         time.sleep(random.randint(1, 10) / 8)
+        html_jerb = get(list_2["url"])
+        soup_jerb = Soup(html_jerb)
+        list_2["text"] = BeautifulSoup(" ".join([i.html for i in soup_jerb.find("div", {"class":"description__text description__text--rich"}, mode="all")[0].find("li", mode="all")])).get_text(" ").replace("\n", " ")
+        jerbs_linkedin.append(list_2)
+        browser.implicitly_wait(random.randint(random.randint(1, 5), random.randint(6, 10))) # seconds
+#         time.sleep(random.randint(1, 10) / 8)
+    return jerbs_linkedin
+
+###
 
 #-------- ROUTES GO HERE -----------#
+
+@app.route('/cloud')
+def start():
+    return render_template('cloud.html')
+
+@app.route('/cloud', methods=['GET', 'POST'])
+def cloud():
+    if request.method == 'POST':
+        result = request.form
+
+    try:
+        job_title = result["title"]
+        jobs_per_page = 5
+        search_radius = 100
+        # pages = 0
+        pages = [0, 10] # list to iterate through
+        pg = []
+        for page in pages:
+            scraped = indeed_scraper(job_title, jobs_per_page, search_radius, page)
+            pg += scraped
+        df_indeed = pd.DataFrame(pg)
+        # clean up duplicates
+        df_indeed.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
+        df_indeed.reset_index(inplace=True, drop=True)
+
+        clicks_linkedin = 2
+        linkedin_jerbs = linkedin_scraper(job_title, clicks_linkedin)
+        df_linkedin = pd.DataFrame(linkedin_jerbs)
+        df_linkedin.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
+        df_linkedin.reset_index(inplace=True, drop=True)
+        df = pd.concat([df_indeed, df_linkedin], axis=0)
+        df.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
+        df.dropna(subset=["text"], inplace=True)
+        df.reset_index(inplace=True, drop=True)
+    except:
+        pass
+    corpus1 = cleaner(df["text"])
+    long_string = ','.join(corpus1)# Create a WordCloud object
+    cloud = WordCloud(background_color="white", max_words=5000, contour_width=3, scale=5, contour_color='steelblue')# Generate a word cloud
+    cloud.generate(long_string)# Visualize the word cloud
+    # plt.figure(figsize=(15,15))
+    cloud.to_image()
+    cloud.to_file("static/cloud1.png")
+
+    return render_template('cloud.html', cloud=cloud)
+
 
 @app.route('/')
 def index():
@@ -136,7 +233,6 @@ def predict():
     if request.method == 'POST':
         result = request.form
 
-
     doc = cleaner([result["description"]])
     #generate tf-idf for the given document
     tf_idf_vector=tfidf_transformer.transform(cv.transform(doc))
@@ -145,36 +241,24 @@ def predict():
     #sort the tf-idf vectors by descending order of scores
     sorted_items=sort_coo(tf_idf_vector.tocoo())
 
+    nkeywords = int(result["nkeywords"])
     #extract only the top n; n here is 10
-    keywords=extract_topn_from_vector(feature_names,sorted_items,10)
-###
+    keywords=extract_topn_from_vector(feature_names,sorted_items,nkeywords)
 
-# now print the results
-    # print("\nAbstract:")
-    # print(doc)
-    # abstract = doc
-    items = [(k,keywords[k]) for k in keywords]
-    prediction = ItemTable(items)
+    # Declare your table
+    class ItemTable(Table):
+        name = Col('Keyword')
+        description = Col('Modelled Occurence Frequency')
 
-# Populate the table
-
-
-# or just {{ table }} from within a Jinja template
-
-
-
-
-
-
-
-
-
-
-
+    # Get some objects
+    class Item(object):
+        def __init__(self, name, description):
+            self.name = name
+            self.description = description
+    items = [Item(k,round(keywords[k]*100,2)) for k in keywords]
+    prediction = ItemTable(items) # table formatted with Flask_table and rendered direct to html
 
     return render_template('index.html', prediction=prediction)
-
-
 
 
 if __name__ == '__main__':
