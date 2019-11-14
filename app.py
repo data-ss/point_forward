@@ -8,7 +8,7 @@ from scipy.sparse import coo_matrix
 import re
 import nltk
 from wordcloud import WordCloud
-#nltk.download('stopwords')
+nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 from nltk.tokenize import RegexpTokenizer#nltk.download('wordnet')
