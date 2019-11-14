@@ -22,8 +22,22 @@ from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 from nltk.tokenize import RegexpTokenizer#nltk.download('wordnet')
 from nltk.stem.wordnet import WordNetLemmatizer
-# import pickle
-from sklearn.pipeline import make_pipeline
+
+## table maker ##
+# import things
+from flask_table import Table, Col
+
+# Declare your table
+class ItemTable(Table):
+    name = Col('Name')
+    description = Col('Description')
+
+# Get some objects
+class Item(object):
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+###
 
 # training data
 df_indeed_list = pd.read_csv("model/data/indeed_data_scientist_list.csv")
@@ -139,13 +153,26 @@ def predict():
     # print("\nAbstract:")
     # print(doc)
     # abstract = doc
-    prediction = [(k,keywords[k]) for k in keywords]
+    items = [(k,keywords[k]) for k in keywords]
+    prediction = ItemTable(items)
+
+# Populate the table
+
+
+# or just {{ table }} from within a Jinja template
 
 
 
 
 
-    return render_template('index.html', prediction=prediction[0])
+
+
+
+
+
+
+
+    return render_template('index.html', prediction=prediction)
 
 
 
