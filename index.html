@@ -11,39 +11,79 @@
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 
+
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+    <style>* {
+      box-sizing: border-box;
+    }
+  /* Create two equal columns*/
+
+  .column {
+    float:left;
+    width:50%;
+    padding:10px;
+    height:300px
+  }
+  .row:after {
+    content:"";
+    display: table;
+    clear: both;
+  }
+    </style>
   </head>
   <body>
-    <h1>Keyword Assistant</h1>
-    <h2>Copy/paste the description of your desired job and the algorithm will pick out the optimal keywords you should use!</h2>
-<form action = "/" method="POST">
+    <div class="jumbotron text-center">
+
+    <h1>Point Forward -> The Keyword Assistant</h1>
+    <h2>Copy/paste the description of your desired job and the algorithm will pick out the optimal keywords you should use on your resume!</h2></div>
+
+<div class="container">
+  <form action = "/" method="POST">
   <div class="container">
+    <div class="col-sm-8">
     <p class="text-muted">Job Description:
     <textarea type="text" name="description" rows="6", cols="50" wrap="soft" placeholder="Paste Job Description"></textarea>
     <br>
     <p class="text-muted">Number of Keywords to Show:
     <input type="number" min="2" max = "30" name="nkeywords" value="2" placeholder="max 20" size=100>
       <br>
-  </div>
 
   <div class="button">
   <p><input class="btn btn-outline btn-xl js-scroll-trigger" type="submit" value="Find Keywords!"/></p>
   </div>
-</form>
+</form></div>
+<br>
 
+<br>
+<div class="col-sm-4">
+  <a href="/cloud"> OR Try the Word Cloud!
+    <br>
+  <img src={{ url_for('static', filename="cloud.gif") }} alt="cloud" style="width:300px;height:250px;">
 
-<div class="feature-item">
+</a></div></div>
+
+</div>
+
+<br />
+<div class="container">
+  <div class="row vertical-center-row">
+  <div class="row">
   {% if prediction %}
-  <img src={{ url_for('static', filename="bronpoint.png") }} alt="point" style="width:400px;height:500px;">
-  <table class="section-heading text-center">Keywords: {{ prediction }}</table>
+<div class="col-sm-4">
+  <h3>You should use these keywords!</h3>
+  <img src={{ url_for('static', filename="bronpoint.jpg") }} alt="point" style="width:350px;height:250px;"> </div>
+  <div class="col-sm-4">
+    <table class="section-heading text-center">{{ prediction }}</table>
+  </div>
   <br>
   {% endif %}
-  </div>
+</div></div></div>
 
 
 

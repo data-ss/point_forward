@@ -19,19 +19,23 @@
     <![endif]-->
   </head>
   <body>
-<h1>Word Cloud Generator</h1>
-<h2>Key in the desired job title and the algorithm will scour the Internet for job descriptions and generate a word cloud for it!</h2>
+
+<div class="jumbotron text-center">
+<h1>Point Forward -> Word Cloud Generator</h1>
+<h2>Key in the desired job title and the algorithm will scour the Internet for job descriptions and generate a word cloud for it!</h2></div>
+
+<div class="container">
+  <div class="col-sm-8">
+
 <form action = "/cloud" method="POST">
-  <div class="container">
     <p class="text-muted">Job Title:
     <input type="text" name="title" placeholder="Search Job Title" size=50>
       <br>
-  </div>
 
   <div class="button">
   <p><input class="btn btn-outline btn-xl js-scroll-trigger" type="submit" value="Generate Cloud!"/></p>
-  </div>
-</form>
+
+</form></div>  </div></div>
 
 
 <div class="feature-item">
