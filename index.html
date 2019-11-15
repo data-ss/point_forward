@@ -64,7 +64,7 @@
 <div class="col-sm-4">
   <a href="/cloud"> OR Try the Word Cloud!
     <br>
-  <img src={{ url_for('static', filename="cloud.gif") }} alt="cloud" style="width:300px;height:250px;">
+  <img src={{ url_for('static', filename="cloud.gif") }} alt="cloud" style="width:300px;height:250px;" />
 
 </a></div></div>
 
@@ -77,7 +77,7 @@
   {% if prediction %}
 <div class="col-sm-4">
   <h3>You should use these keywords!</h3>
-  <img src={{ url_for('static', filename="bronpoint.jpg") }} alt="point" style="width:350px;height:250px;"> </div>
+  <img src={{ url_for('static', filename="bronpoint.jpg") }} alt="point" style="width:350px;height:250px;" /> </div>
   <div class="col-sm-4">
     <table class="section-heading text-center">{{ prediction }}</table>
   </div>

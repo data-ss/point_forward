@@ -40,7 +40,8 @@
 
 <div class="feature-item">
   {% if cloud %}
-  <img src={{ url_for('static', filename="cloud1.png") }} alt="user cloud" style="width:1000px;height:600px;">
+  <!-- <img src={{ url_for('static', filename="cloud1.png") }} alt="user cloud" style="width:1000px;height:600px;"> -->
+    <img src="static/cloud1.png?{{no_cache}}" alt="user cloud" style="width:1000px;height:600px;" />
   <br>
   {% endif %}
   </div>

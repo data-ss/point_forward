@@ -8,7 +8,7 @@ from scipy.sparse import coo_matrix
 import re
 import nltk
 from wordcloud import WordCloud
-nltk.download('stopwords')
+# nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 from nltk.tokenize import RegexpTokenizer#nltk.download('wordnet')
@@ -138,6 +138,7 @@ def indeed_scraper(job_title, jobs_per_page, search_radius, pages):
             list_1["company"] = jerbs_index.find("div", {"class": "sjcl"}, mode="all")[i].find("a")[0].text
         else:
             list_1["company"] = jerbs_index.find("span", {"class": "company"}, mode="all")[i].text
+        time.sleep(random.randint(1, 10) / 10)
         list_1["url"] = "https://ca.indeed.com"+jerbs_index.find("div", {"class": "title"}, mode="all")[i].find("a").attrs["href"]
         html_jerb = get(list_1["url"])
         soup_jerb = Soup(html_jerb)
@@ -202,18 +203,24 @@ def cloud():
         # clean up duplicates
         df_indeed.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
         df_indeed.reset_index(inplace=True, drop=True)
-
-        clicks_linkedin = 2
-        linkedin_jerbs = linkedin_scraper(job_title, clicks_linkedin)
-        df_linkedin = pd.DataFrame(linkedin_jerbs)
-        df_linkedin.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
-        df_linkedin.reset_index(inplace=True, drop=True)
-        df = pd.concat([df_indeed, df_linkedin], axis=0)
-        df.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
-        df.dropna(subset=["text"], inplace=True)
-        df.reset_index(inplace=True, drop=True)
     except:
         pass
+
+# broken selenium
+    # try:
+    #     clicks_linkedin = 2
+    #     linkedin_jerbs = linkedin_scraper(job_title, clicks_linkedin)
+    #     df_linkedin = pd.DataFrame(linkedin_jerbs)
+    #     df_linkedin.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
+    #     df_linkedin.reset_index(inplace=True, drop=True)
+    # except:
+    #     pass
+
+    df = df_indeed
+    df.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
+    df.dropna(subset=["text"], inplace=True)
+    df.reset_index(inplace=True, drop=True)
+
     corpus1 = cleaner(df["text"])
     long_string = ','.join(corpus1)# Create a WordCloud object
     cloud = WordCloud(background_color="white", max_words=5000, contour_width=3, scale=5, contour_color='steelblue')# Generate a word cloud
@@ -221,8 +228,9 @@ def cloud():
     # plt.figure(figsize=(15,15))
     cloud.to_image()
     cloud.to_file("static/cloud1.png")
+    cloud_c = 1
 
-    return render_template('cloud.html', cloud=cloud)
+    return render_template('cloud.html', cloud=cloud_c, no_cache=time.time())
 
 
 @app.route('/')
