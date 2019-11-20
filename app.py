@@ -123,7 +123,7 @@ tfidf_transformer.fit(X)
 # get feature names
 feature_names=cv.get_feature_names()
 
-### SCRAPER
+### SCRAPER FUNCTIONS
 def indeed_scraper(job_title, jobs_per_page, search_radius, pages):
     '''
     1. Automatically uses "+" as a space delimiter when entering job_title
@@ -136,7 +136,8 @@ def indeed_scraper(job_title, jobs_per_page, search_radius, pages):
     jerbs_index = soup.find("td", {"id": "resultsCol"})
 
     jerbs_indeed = []
-    for i in range(len(jerbs_index.find("div", {"class": "title"}, mode="all"))):
+    # for i in range(len(jerbs_index.find("div", {"class": "title"}, mode="all"))):
+    for i in range(5):
         list_1 = {}
         list_1["title"] = jerbs_index.find("div", {"class": "title"}, mode="all")[i].find("a").attrs["title"]
         if jerbs_index.find("span", {"class": "company"}, mode="all")[i].text == "":
@@ -169,7 +170,8 @@ def linkedin_scraper(job_title, clicks_linkedin):
     soup_linkedin = Soup(html_linkedin)
 
     jerbs_linkedin = []
-    for i in range(len(soup_linkedin.find("li", {"class": "result-card job-result-card result-card--with-hover-state"}, mode="all"))):
+    # for i in range(len(soup_linkedin.find("li", {"class": "result-card job-result-card result-card--with-hover-state"}, mode="all"))):
+    for i in range(5):
         list_2 = {}
         list_2["title"] = soup_linkedin.find("li", {"class": "result-card job-result-card result-card--with-hover-state"}, mode="all")[i].find("h3", {"class":"result-card__title job-result-card__title"}).text
         list_2["company"] = soup_linkedin.find("li", {"class": "result-card job-result-card result-card--with-hover-state"}, mode="all")[i].find("h4", {"class":"result-card__subtitle job-result-card__subtitle"}).text
@@ -201,8 +203,7 @@ def cloud():
         job_title = result["title"]
         jobs_per_page = 5
         search_radius = 100
-        # pages = 0
-        pages = [0, 10] # list to iterate through
+        pages = [0] # list to iterate through
         pg = []
         for page in pages:
             scraped = indeed_scraper(job_title, jobs_per_page, search_radius, page)
@@ -215,7 +216,7 @@ def cloud():
         pass
 
     try:
-        clicks_linkedin = 2
+        clicks_linkedin = 0
         linkedin_jerbs = linkedin_scraper(job_title, clicks_linkedin)
         df_linkedin = pd.DataFrame(linkedin_jerbs)
         df_linkedin.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
