@@ -15,18 +15,23 @@ from nltk.tokenize import RegexpTokenizer#nltk.download('wordnet')
 from nltk.stem.wordnet import WordNetLemmatizer
 from flask_table import Table, Col
 from gazpacho import get, Soup
-from selenium.webdriver import Firefox
-from selenium.webdriver.firefox.options import Options
 from bs4 import BeautifulSoup
 import time
 import pandas as pd
 import random
-# import sqlite3
-# from sqlite3 import Error
+from selenium import webdriver
 
-options = Options()
-options.headless = True
-browser = Firefox(options=options)
+# ASSIGN PATH VARIABLES
+GOOGLE_CHROME_PATH = '/app/.apt/usr/bin/google_chrome'
+CHROMEDRIVER_PATH = '/app/.chromedriver/bin/chromedriver'
+# SET CHROME OPTIONS
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--disable-gpu')
+chrome_options.add_argument('--no-sandbox')
+chrome_options.binary_location = GOOGLE_CHROME_PATH
+# BUILD BROWSER
+browser = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=chrome_options)
+
 
 
 app = flask.Flask(__name__, template_folder="")
