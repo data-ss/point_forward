@@ -147,7 +147,7 @@ def indeed_scraper(job_title, jobs_per_page, search_radius, pages):
         list_1["url"] = "https://ca.indeed.com"+jerbs_index.find("div", {"class": "title"}, mode="all")[i].find("a").attrs["href"]
         html_jerb = get(list_1["url"])
         soup_jerb = Soup(html_jerb)
-        list_1["text"] = BeautifulSoup(" ".join([i.html for i in soup_jerb.find("div", {"id": "jobDescriptionText"}, mode="all")[0].find("li", mode="all")])).get_text(" ").replace("\n", " ")
+        list_1["text"] = BeautifulSoup(" ".join([i.html for i in soup_jerb.find("div", {"id": "jobDescriptionText"}, mode="all")[0].find("li", mode="all")]), 'html.parser').get_text(" ").replace("\n", " ")
         jerbs_indeed.append(list_1)
         time.sleep(random.randint(1, 10) / 10)
     return jerbs_indeed
