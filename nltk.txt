@@ -1,4 +1,3 @@
 stopwords
 wordnet
-tokenize
 stem
