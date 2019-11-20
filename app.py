@@ -152,10 +152,13 @@ def linkedin_scraper(job_title, clicks_linkedin):
     url_linkedin = f"https://www.linkedin.com/jobs/search?keywords={job_title}&location=Toronto%2C%20Ontario%2C%20Canada&trk=homepage-jobseeker_jobs-search-bar_search-submit&redirect=false&position=1&pageNum=0"
     browser.get(url_linkedin)
 
-    for _ in range(clicks_linkedin):
-    # clicking to get more jobs
-        browser.find_element_by_class_name("see-more-jobs").click()
+    try:
         browser.implicitly_wait(random.randint(random.randint(10, 15), random.randint(16, 20))) # seconds
+        for _ in range(clicks_linkedin):
+            browser.find_element_by_class_name("see-more-jobs").click()
+            browser.implicitly_wait(random.randint(random.randint(10, 15), random.randint(16, 20))) # seconds
+    except:
+        pass
 
     html_linkedin = browser.page_source
     soup_linkedin = Soup(html_linkedin)
@@ -206,17 +209,16 @@ def cloud():
     except:
         pass
 
-# broken selenium
-    # try:
-    #     clicks_linkedin = 2
-    #     linkedin_jerbs = linkedin_scraper(job_title, clicks_linkedin)
-    #     df_linkedin = pd.DataFrame(linkedin_jerbs)
-    #     df_linkedin.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
-    #     df_linkedin.reset_index(inplace=True, drop=True)
-    # except:
-    #     pass
+    try:
+        clicks_linkedin = 2
+        linkedin_jerbs = linkedin_scraper(job_title, clicks_linkedin)
+        df_linkedin = pd.DataFrame(linkedin_jerbs)
+        df_linkedin.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
+        df_linkedin.reset_index(inplace=True, drop=True)
+    except:
+        pass
 
-    df = df_indeed
+    df = pd.concat([df_indeed, df_linkedin], axis=0)
     df.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
     df.dropna(subset=["text"], inplace=True)
     df.reset_index(inplace=True, drop=True)
