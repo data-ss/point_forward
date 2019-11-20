@@ -22,16 +22,16 @@ import random
 from selenium import webdriver
 
 # ASSIGN PATH VARIABLES
-GOOGLE_CHROME_PATH = '/app/.apt/usr/bin/google_chrome'
-CHROMEDRIVER_PATH = '/app/.chromedriver/bin/chromedriver'
+# GOOGLE_CHROME_PATH = '/app/.apt/usr/bin/google_chrome'
+# CHROMEDRIVER_PATH = '/app/.chromedriver/bin/chromedriver'
 # SET CHROME OPTIONS
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument('--disable-gpu')
 chrome_options.add_argument('--no-sandbox')
-chrome_options.binary_location = GOOGLE_CHROME_PATH
+# chrome_options.binary_location = GOOGLE_CHROME_PATH
 # BUILD BROWSER
-browser = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=chrome_options)
-
+# browser = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=chrome_options)
+browser = webdriver.Chrome(options=chrome_options)
 
 
 app = flask.Flask(__name__, template_folder="")
