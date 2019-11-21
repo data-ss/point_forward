@@ -199,6 +199,8 @@ def cloud():
     if request.method == 'POST':
         result = request.form
 
+    df_indeed = pd.DataFrame()
+    df_linkedin = pd.DataFrame()
     try:
         job_title = result["title"]
         jobs_per_page = 5
@@ -208,7 +210,7 @@ def cloud():
         for page in pages:
             scraped = indeed_scraper(job_title, jobs_per_page, search_radius, page)
             pg += scraped
-        df_indeed = pd.DataFrame(pg)
+        df_indeed = pd.concat([pd.DataFrame(pg), df_indeed], axis-0)
         # clean up duplicates
         df_indeed.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
         df_indeed.reset_index(inplace=True, drop=True)
@@ -218,7 +220,7 @@ def cloud():
     try:
         clicks_linkedin = 0
         linkedin_jerbs = linkedin_scraper(job_title, clicks_linkedin)
-        df_linkedin = pd.DataFrame(linkedin_jerbs)
+        df_linkedin = pd.concat([pd.DataFrame(linkedin_jerbs), df_linkedin], axis=0)
         df_linkedin.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
         df_linkedin.reset_index(inplace=True, drop=True)
     except:
