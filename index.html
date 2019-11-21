@@ -48,11 +48,11 @@
   <form action = "/" method="POST">
   <div class="container">
     <div class="col-sm-8">
-    <p class="text-muted">Job Description:
+            <p class="text-muted">Job Description:
     <textarea type="text" name="description" rows="6", cols="50" wrap="soft" placeholder="Paste Job Description"></textarea>
     <br>
     <p class="text-muted">Number of Keywords to Show:
-    <input type="number" min="2" max = "30" name="nkeywords" value="2" placeholder="max 30" size=100>
+    <input type="number" min="2" max = "30" name="nkeywords" value="10" placeholder="max 30" size=100>
       <br>
 
   <div class="button">
@@ -62,16 +62,17 @@
 <br>
 
 <br>
-<div class="col-sm-4">
-  <a href="/cloud"> OR Try the Word Cloud!
+<div class="container">
+  <div class="col-sm-4">
+  <a href="/"> <h3>OR Try the WordCloud Generator! It functions off of an NLTK text-parsing pipeline!</h3>
+    <br> <h4>(Temporarily disabled due to limitations of free Heroku. Download and run it from Github to try it out instead!)</h4>
     <br>
   <img src={{ url_for('static', filename="cloud.gif") }} alt="cloud" style="width:300px;height:250px;" />
 
-</a></div></div>
+</a></div></div></div>
 
 </div>
 
-<br />
 <div class="container">
   <div class="row vertical-center-row">
   <div class="row">

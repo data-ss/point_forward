@@ -21,16 +21,14 @@ import pandas as pd
 import random
 from selenium import webdriver
 
-# ASSIGN PATH VARIABLES
-# GOOGLE_CHROME_PATH = '/app/.apt/usr/bin/google_chrome'
-# CHROMEDRIVER_PATH = '/app/.chromedriver/bin/chromedriver'
+### SELENIUM FOR SCRAPING ###
+### USED FOR WORDCLOUD ###
 # SET CHROME OPTIONS
 chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--headless')
 chrome_options.add_argument('--disable-gpu')
 chrome_options.add_argument('--no-sandbox')
-# chrome_options.binary_location = GOOGLE_CHROME_PATH
 # BUILD BROWSER
-# browser = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, options=chrome_options)
 browser = webdriver.Chrome(options=chrome_options)
 
 
@@ -190,63 +188,68 @@ def linkedin_scraper(job_title, clicks_linkedin):
 
 #-------- ROUTES GO HERE -----------#
 
-@app.route('/cloud')
-def start():
-    return render_template('cloud.html')
+##
+### WORDCLOUD FUNCTION IS TEMPORARILY DEPRECATED DUE TO LIMITATIONS OF FREE HEROKU ENVIRONMENT ###
+##
 
-@app.route('/cloud', methods=['GET', 'POST'])
-def cloud():
-    if request.method == 'POST':
-        result = request.form
-
-    df_indeed = pd.DataFrame({"title":"",
-    "company":"",
-    "url":"",
-    "text": ""}, index=[0])
-    df_linkedin = pd.DataFrame({"title":"",
-    "company":"",
-    "url":"",
-    "text": ""}, index=[0])
-    try:
-        job_title = result["title"]
-        jobs_per_page = 5
-        search_radius = 100
-        pages = [0] # list to iterate through
-        pg = []
-        for page in pages:
-            scraped = indeed_scraper(job_title, jobs_per_page, search_radius, page)
-            pg += scraped
-        df_indeed = pd.concat([pd.DataFrame(pg), df_indeed], axis-0)
-        # clean up duplicates
-        df_indeed.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
-        df_indeed.reset_index(inplace=True, drop=True)
-    except:
-        pass
-
-    try:
-        clicks_linkedin = 0
-        linkedin_jerbs = linkedin_scraper(job_title, clicks_linkedin)
-        df_linkedin = pd.concat([pd.DataFrame(linkedin_jerbs), df_linkedin], axis=0)
-        df_linkedin.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
-        df_linkedin.reset_index(inplace=True, drop=True)
-    except:
-        pass
-
-    df = pd.concat([df_indeed, df_linkedin], axis=0)
-    df.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
-    df.dropna(subset=["text"], inplace=True)
-    df.reset_index(inplace=True, drop=True)
-
-    corpus1 = cleaner(df["text"])
-    long_string = ','.join(corpus1)# Create a WordCloud object
-    cloud = WordCloud(background_color="white", max_words=5000, contour_width=3, scale=5, contour_color='steelblue')# Generate a word cloud
-    cloud.generate(long_string)# Visualize the word cloud
-    # plt.figure(figsize=(15,15))
-    cloud.to_image()
-    cloud.to_file("static/cloud1.png")
-    cloud_c = 1
-
-    return render_template('cloud.html', cloud=cloud_c, no_cache=time.time())
+# @app.route('/cloud')
+# def start():
+#     return render_template('cloud.html')
+#
+# @app.route('/cloud', methods=['GET', 'POST'])
+# def cloud():
+#     if request.method == 'POST':
+#         result = request.form
+#
+#     df_indeed = pd.DataFrame({"title":"",
+#     "company":"",
+#     "url":"",
+#     "text": ""}, index=[0])
+#     df_linkedin = pd.DataFrame({"title":"",
+#     "company":"",
+#     "url":"",
+#     "text": ""}, index=[0])
+#     try:
+#         job_title = result["title"]
+#         jobs_per_page = 5
+#         search_radius = 100
+#         pages = [0] # list to iterate through
+#         pg = []
+#         for page in pages:
+#             scraped = indeed_scraper(job_title, jobs_per_page, search_radius, page)
+#             pg += scraped
+#         df_indeed = pd.concat([pd.DataFrame(pg), df_indeed], axis-0)
+#         # clean up duplicates
+#         df_indeed.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
+#         df_indeed.reset_index(inplace=True, drop=True)
+#     except:
+#         pass
+#
+#     try:
+#         clicks_linkedin = 0
+#         linkedin_jerbs = linkedin_scraper(job_title, clicks_linkedin)
+#         df_linkedin = pd.concat([pd.DataFrame(linkedin_jerbs), df_linkedin], axis=0)
+#         df_linkedin.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
+#         df_linkedin.reset_index(inplace=True, drop=True)
+#     except:
+#         pass
+#
+#     df = pd.concat([df_indeed, df_linkedin], axis=0)
+#     df.drop_duplicates(subset=["title", "company", "text"], keep="first", inplace=True)
+#     df.dropna(subset=["text"], inplace=True)
+#     df.reset_index(inplace=True, drop=True)
+#
+#     corpus1 = cleaner(df["text"])
+#     long_string = ','.join(corpus1)# Create a WordCloud object
+#     cloud = WordCloud(background_color="white", max_words=5000, contour_width=3, scale=5, contour_color='steelblue')# Generate a word cloud
+#     cloud.generate(long_string)# Visualize the word cloud
+#     # plt.figure(figsize=(15,15))
+#     cloud.to_image()
+#     cloud.to_file("static/cloud1.png")
+#     cloud_c = 1
+#
+#     return render_template('cloud.html', cloud=cloud_c, no_cache=time.time())
+### END OF WORDCLOUD FUNCTION ###
 
 
 @app.route('/')
