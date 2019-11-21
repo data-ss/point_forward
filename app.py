@@ -199,8 +199,14 @@ def cloud():
     if request.method == 'POST':
         result = request.form
 
-    df_indeed = pd.DataFrame()
-    df_linkedin = pd.DataFrame()
+    df_indeed = pd.DataFrame({"title":"",
+    "company":"",
+    "url":"",
+    "text": ""}, index=[0])
+    df_linkedin = pd.DataFrame({"title":"",
+    "company":"",
+    "url":"",
+    "text": ""}, index=[0])
     try:
         job_title = result["title"]
         jobs_per_page = 5
