@@ -20,6 +20,7 @@ import time
 import pandas as pd
 import random
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 
 ### SELENIUM FOR SCRAPING ###
 ### USED FOR WORDCLOUD ###
@@ -29,7 +30,7 @@ chrome_options.add_argument('--headless')
 chrome_options.add_argument('--disable-gpu')
 chrome_options.add_argument('--no-sandbox')
 # BUILD BROWSER
-browser = webdriver.Chrome(options=chrome_options)
+browser = webdriver.Chrome(ChromeDriverManager().install(),options=chrome_options)
 
 
 app = flask.Flask(__name__, template_folder="")
@@ -286,7 +287,10 @@ def predict():
     items = [Item(k,round(keywords[k]*100,2)) for k in keywords]
     prediction = ItemTable(items) # table formatted with Flask_table and rendered direct to html
 
-    return render_template('index.html', prediction=prediction)
+    scroll="one"
+    description_return = result["description"]
+
+    return render_template('index.html', prediction=prediction, scroll=scroll, description=description_return)
 
 
 if __name__ == '__main__':

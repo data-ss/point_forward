@@ -1,16 +1,23 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Point Forward">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Point Forward" />
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>Point Forward</title>
 
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" >
+    <!--<link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+      integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
+      crossorigin="anonymous"
+    /> -->
 
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='assets/favicon_io/favicon-16x16.png') }}">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -19,79 +26,136 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <style>* {
-      box-sizing: border-box;
-    }
-  /* Create two equal columns*/
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      /* Create two equal columns*/
 
-  .column {
-    float:left;
-    width:50%;
-    padding:10px;
-    height:300px
-  }
-  .row:after {
-    content:"";
-    display: table;
-    clear: both;
-  }
+      .column {
+        float: left;
+        width: 50%;
+        padding: 10px;
+        height: 300px;
+      }
+      .row:after {
+        content: '';
+        display: table;
+        clear: both;
+      }
     </style>
   </head>
   <body>
-    <div class="jumbotron text-center">
 
-    <h1>Point Forward -> The Keyword Assistant</h1>
-    <h2>Copy & paste the description of your desired job and the algorithm will pick out the optimal keywords you should prioritize on your resume!</h2>
-  <a href="https://github.com/duryan00/point_forward"><h4>Click here for the Github code</h4></a></div>
+    <section id="banner">
+      <h2>Point Forward -> The Keyword Assistant</h2>
+      <h4>
+        Copy & paste the description of your desired job and the algorithm will
+        pick out the optimal keywords you should prioritize on your resume!
+      </h4>
+      <a href="https://github.com/duryan00/point_forward" class="button special"
+        >Click here for the Github code</a
+      >
+    </section>
 
-<div class="container">
-  <form action = "/" method="POST">
-  <div class="container">
-    <div class="col-sm-8">
-            <p class="text-muted">Job Description:
-    <textarea type="text" name="description" rows="6", cols="50" wrap="soft" placeholder="Paste Job Description"></textarea>
-    <br>
-    <p class="text-muted">Number of Keywords to Show:
-    <input type="number" min="2" max = "30" name="nkeywords" value="10" placeholder="max 30" size=100>
-      <br>
+    <section class="wrapper style2 special">
+      <div class="features">
+        <div class="feature">
+      <div class="inner narrow">
+        <form action="/" method="POST" class="grid-form">
+          <div class="form-control">
+            <label for="description">Job Description:</label>
 
-  <div class="button">
-  <p><input class="btn btn-outline btn-xl js-scroll-trigger" type="submit" value="Find Keywords!"/></p>
-  </div>
-</form></div>
-<br>
+            <textarea
+              type="text"
+              name="description"
+              rows="4"
+              cols="50"
+              wrap="soft"
+              placeholder="Paste Job Description"
+              class="form-control"
+              id="txtArea"
+            ></textarea>
+            {% if description %}
+            <script type="text/javascript">
+                  document.getElementById('txtArea').value = '{{ description }}';
+            </script>
+            {% endif %}
+          </div>
+          <div class="form-control">
+            <label for="keyword">Number of Keywords to Show:</label>
+            <input
+              type="number"
+              min="2"
+              max="30"
+              name="nkeywords"
+              value="10"
+              placeholder="max 30"
+              size="100"
+              class="form-control"
+            />
+          </div>
+          <ul class="actions">
+            <li>
+              <input
+                class="btn btn-outline btn-xl js-scroll-trigger"
+                type="submit"
+                value="Find Keywords!"
+              />
+            </li>
+          </ul>
+          </div>
+        </form>
+      </div>
 
-<br>
-<div class="container">
-  <div class="col-sm-4">
-  <a href="/"> <h3>OR Try the WordCloud Generator! It functions off of an NLTK text-parsing pipeline!</h3>
-    <br> <h4>(Temporarily disabled due to limitations of free Heroku. Download and run it from Github to try it out instead!)</h4>
-    <br>
-  <img src={{ url_for('static', filename="cloud.gif") }} alt="cloud" style="width:300px;height:250px;" />
+      <div class="feature">
+        <a href="/">
+          <h3>
+            OR Try the WordCloud Generator! It functions off of an NLTK
+            text-parsing pipeline!
+          </h3>
+          <br />
+          <h4>
+            (Temporarily disabled due to limitations of free Heroku. Download
+            and run it from Github to try it out instead!)
+          </h4>
+          <br />
+          <img src={{ url_for('static', filename="cloud.gif") }} alt="cloud"
+          style="width:300px;height:250px;" />
+        </a>
+    </div>
+    </div>
+    </section>
 
-</a></div></div></div>
-
-</div>
-
-<div class="container">
-  <div class="row vertical-center-row">
-  <div class="row">
-  {% if prediction %}
-<div class="col-sm-4">
-  <h3>You should use these keywords!</h3>
-  <img src={{ url_for('static', filename="bronpoint.jpg") }} alt="point" style="width:350px;height:250px;" /> </div>
-  <div class="col-sm-4">
-    <table class="section-heading text-center">{{ prediction }}</table>
-  </div>
-  <br>
+    {% if prediction %}
+    <section id="one" class="wrapper special" style="visibility: hidden;">
+      <div class="features">
+      <div class="feature">
+        {% if scroll %}
+        <script type="text/javascript">
+            document.getElementById("one").style.visibility = "visible";
+            document.location.hash = '#' + '{{ scroll }}';
+        </script>
+        {% endif %}
+      <h3>You should use these keywords!</h3>
+      <table class="section-heading text-center">
+        {{ prediction }}
+      </table>
+    </div>
+    </div>
+  </section>
   {% endif %}
-</div></div></div>
-
-
-
-  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-  <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
-  <!-- Include all compiled plugins (below), or include individual files as needed -->
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
-</body>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script
+      src="https://code.jquery.com/jquery-1.12.4.min.js"
+      integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+      integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>
